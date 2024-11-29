@@ -1,0 +1,17 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci # Installs dependencies
+    build:
+      commands:
+        - npm run build # Builds the project
+  artifacts:
+    baseDirectory: build # Directory where build artifacts are located
+    files:
+      - '**/*' # Include all files in the build directory
+  cache:
+    paths:
+      - node_modules/**/* # Cache node_modules for faster builds
+
