@@ -82,7 +82,7 @@ function App() {
           <Route path="/vcardar" element={<ArApp8 />}></Route>
           <Route path="/tree" element={<Heart />}></Route>
           <Route path="/snowfall" element={<Snow />}></Route>
-          <Route path="/bombay1" element={<Bombay />}></Route>
+       
           <Route path="/Contactus" element={<ContactUs />}></Route>
           <Route path="/Ar" element={<ARcomp />}></Route>
           <Route
