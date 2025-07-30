@@ -1045,6 +1045,8 @@ const award2 = new URL("../../images/award2.jpg", import.meta.url);
 const award3 = new URL("../../images/award3.jpg", import.meta.url);
 const award4 = new URL("../../images/award4.jpg", import.meta.url);
 
+
+
 function LandingPage2() {
   const [scrolled, setScrolled] = useState(false);
   const [scrolled2, setScrolled2] = useState(false);
