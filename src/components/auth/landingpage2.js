@@ -12,6 +12,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import "aos/dist/aos.css";
 import Footer from "./footer";
+import AwardsSection from './AwardsSection.jsx'
 
 const headset2 = new URL(
   "../../images/a132ab6f-c081-475e-bedd-e86a440dbf21-removebg-preview.png",
@@ -702,7 +703,7 @@ function LandingPage2() {
               </div>
             </div>
           </section>
-
+          <AwardsSection/>
           <Parallax
             blur={0}
             bgImage={water}
