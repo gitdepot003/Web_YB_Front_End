@@ -19192,9 +19192,21 @@ Features Area CSS
 /*================================================
 Virtual Reality Design Area CSS
 =================================================*/
-.vr-image {
+/* .vr-image {
   text-align: center;
+} */
+.vr-image {
+  display: flex;
+  justify-content: center; /* centers horizontally */
+  margin-top: 20px;        /* optional spacing */
 }
+
+.vr-image img {
+  max-width: 100%; /* keep responsive */
+  height: auto;
+  display: block;  /* removes unwanted inline spacing */
+}
+
 
 .single-design-image {
   position: relative;
