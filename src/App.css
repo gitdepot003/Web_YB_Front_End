@@ -19800,7 +19800,7 @@ Feedback Area CSS
 /*================================================
 Clients Area CSS
 =================================================*/
-.our-clients-area {
+/* .our-clients-area {
   position: relative;
   z-index: 1;
 }
@@ -19852,7 +19852,138 @@ Clients Area CSS
 
 .single-clients:not(:first-child) {
   margin-top: 30px;
+} */
+
+.our-clients-area {
+  position: relative;
+  z-index: 1;
+  padding: 80px 0;
+  background-color: #f4faff;
+  overflow: hidden;
 }
+
+.our-clients-area .map-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  margin: 0 auto;
+  z-index: -1;
+  opacity: 0.5; /* Increased from 0.3 to 0.5 */
+  max-width: 80%;
+  filter: brightness(1.1) contrast(1.2); /* Enhanced visibility */
+}
+
+.our-clients-area .map-box img {
+  width: 100%;
+  height: auto;
+}
+
+.our-clients-content h2 {
+  margin-bottom: 20px;
+  line-height: 1.4;
+  font-size: 36px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.our-clients-content p {
+  margin-bottom: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.our-clients-list {
+  padding-left: 30px;
+}
+
+.single-clients {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.single-clients a {
+  display: block;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 25px 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.single-clients a:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.single-clients img {
+  max-height: 60px;
+  width: auto;
+  max-width: 100%;
+}
+.our-clients-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.1) 1px, transparent 0);
+  background-size: 20px 20px;
+  z-index: -2;
+  opacity: 0.3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .our-clients-list {
+    padding-left: 15px;
+    padding-top: 40px;
+  }
+  
+  .our-clients-content {
+    text-align: center;
+  }
+  
+  .our-clients-content h2 {
+    font-size: 32px;
+  }
+  
+  .our-clients-area .map-box {
+    opacity: 0.4; /* Slightly less opacity on smaller screens */
+  }
+}
+
+@media (max-width: 767px) {
+  .our-clients-area {
+    padding: 60px 0;
+  }
+  
+  .our-clients-content h2 {
+    font-size: 28px;
+  }
+  
+  .single-clients a {
+    padding: 20px 10px;
+    height: 100px;
+  }
+  
+  .single-clients img {
+    max-height: 50px;
+  }
+  
+  .our-clients-area .map-box {
+    opacity: 0.35; /* Further reduced opacity on mobile */
+    max-width: 90%;
+  }
+}
+
 
 /*================================================
 Shop Area CSS

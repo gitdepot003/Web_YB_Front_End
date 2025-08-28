@@ -13,7 +13,7 @@ import "react-multi-carousel/lib/styles.css";
 import "aos/dist/aos.css";
 import Footer from "./footer";
 import AwardsSection from './AwardsSection.jsx'
-
+import ClientsSection from "./ClientsSection.jsx";
 const headset2 = new URL(
   "../../images/a132ab6f-c081-475e-bedd-e86a440dbf21-removebg-preview.png",
   import.meta.url
@@ -830,7 +830,7 @@ function LandingPage2() {
                       {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit,
                       sed do eiusmod tempor incididunt ut labore et dolore magna
                       aliqua. Quis ipsum suspendisse ultrices gravida. Risus
-                      commodo viverra maecenas accumsan lacus vel facilisis. */}
+                      commodo viverra maecenas accumsan lacus vel facilisis.*/}
                     </p>
                   </div>
                 </div>
