@@ -78,6 +78,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "postinstall": "npm uninstall canvas || true",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
