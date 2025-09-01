@@ -1,1 +1,5 @@
 node_modules/
+# .gitignore
+build/
+src/components/auth/ClientsSection.css
+src/components/auth/ClientsSection.jsx

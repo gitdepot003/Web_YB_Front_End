@@ -13,7 +13,7 @@ import "react-multi-carousel/lib/styles.css";
 import "aos/dist/aos.css";
 import Footer from "./footer";
 import AwardsSection from './AwardsSection.jsx'
-import ClientsSection from "./ClientsSection.jsx";
+// import ClientsSection from "./ClientsSection.jsx";
 const headset2 = new URL(
   "../../images/a132ab6f-c081-475e-bedd-e86a440dbf21-removebg-preview.png",
   import.meta.url
