@@ -178,6 +178,7 @@ function Signup2() {
 
     }
   };
+
   // const confirmOTP = async (otp) => {
   //   try {
   //     const userCredential = await confirmation.confirm(otp);

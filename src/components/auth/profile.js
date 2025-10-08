@@ -1,35 +1,44 @@
-import React, { useState, useCallback } from "react";
+
+
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useEffect, useRef } from "react";
 import { getUserIdFromAuth } from "../../Redux/actions/GetSellerIdFromAuthActionCreators";
 import toast, { Toaster } from "react-hot-toast";
-import OtpInput from "react-otp-input";
-import ImageUploading from "react-images-uploading";
-import { UseSelector } from "react-redux/es/hooks/useSelector";
-import QrScanner
- from "react-qr-scanner";
-import jsQR from "jsqr";
+import QrScanner from "react-qr-scanner";
+import {
+  ArrowRight,
+  CreditCard as Edit,
+  Wallet,
+  LogOut,
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Coins,
+  QrCode,
+  X,
+} from "lucide-react";
 
-const scanner = new URL("../../images/frame (4).png", import.meta.url);
-function Profile() {
-  const [scanneropen, setopenScan] = useState(false);
+export default function Profile() {
+  // ---- State & Refs ----
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [testModalOpen, setTestModalOpen] = useState(false);
+  const [flashOn, setFlashOn] = useState(false);
+  const [data, setData] = useState([]);
   const videoRef = useRef(null);
-  const [result, setResult] = useState("");
 
-  // Start the scanner
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const baseUrl = "https://server.youthbuzz.in";
+  const id = useSelector((state) => state.get_seller_profile_id.user_id);
 
-  // Cleanup when the component is unmounted
-
+  // ---- Camera / Scanner ----
   useEffect(() => {
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -37,46 +46,19 @@ function Profile() {
         console.error("Error accessing camera:", error);
       }
     };
-    if (scanneropen) {
-      startCamera();
-    }
-    return () => {
-      const video = videoRef.current;
 
-      if (video) {
-        const stream = video.srcObject;
-        if (stream) {
-          const tracks = stream.getTracks();
-          tracks.forEach((track) => track.stop());
-        }
+    if (scannerOpen) startCamera();
+
+    return () => {
+      if (videoRef.current?.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, [scannerOpen]);
 
-  const navigate = useNavigate('');
-  const dispatch = useDispatch();
-  const baseUrl = "https://server.youthbuzz.in";
-  const baseUrls = "http://localhost:8000";
-  const id = useSelector((state) => state.get_seller_profile_id.user_id);
-  console.log(id);
-  const [data, setData] = useState([]);
-  const [test, setTest] = useState(false);
 
-  const buytest = async () => {
-    try {
-      const res = await axios.patch(
-        `http://localhost:8000/api/v1/user/updatecoin/${id}`,
-        {
-          amount: 5,
-        }
-      );
-      console.log(res);
-      if (res.data.status == true) {
-        navigate("/personalitytest");
-      }
-    } catch (error) {}
-  };
-  useEffect(() => {
+
+   useEffect(() => {
     if (!id) {
       navigate("/portal", {
         replace: true,
@@ -91,290 +73,211 @@ function Profile() {
  // Assuming fetchData is a function you want to call when 'id' is truthy
     }
   }, [navigate, id]);
+
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `${baseUrl}/api/v1/user/getOneuser/${id}`
-      );
-      setData([response.data.data.user]);
-
-      console.log(response);
-    } catch (error) {}
-  };
-  const handleScan = (result) => {
-    if (result) {
-      console.log("qr folund");
-      console.log(result, "hhhhj");
-      // Use a regex to check if the result is a valid URL
-
-      if (result) {
-        // Navigate to the detected URL
-
-        window.location.href = result.text;
-      } else {
-        console.error("Invalid URL format");
-      }
+      const res = await axios.get(`${baseUrl}/api/v1/user/getOneuser/${id}`);
+      setData([res.data.data.user]);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleError = (error) => {
-    console.error("Error accessing camera:", error);
+  // ---- QR Scan Handlers ----
+  const handleScan = (res) => {
+    if (res) window.location.href = res.text;
   };
+
+  const handleError = (error) => console.error("QR Scanner Error:", error);
+
+  const toggleFlash = () => setFlashOn(!flashOn);
+
+  // ---- Logout Handlers ----
   const handleLogout = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await axios.get(`${baseUrl}/api/v1/user/logout`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(`${baseUrl}/api/v1/user/logout`, { withCredentials: true });
       if (res.data.status === "success") {
         dispatch(getUserIdFromAuth(""));
-        toast.success("You logged Out Successfully");
+        toast.success("Logged Out Successfully");
         navigate("/signup");
       }
-    } catch (err) {
-      console.error(err);
-      toast.error("There may be some internal server error");
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error during logout");
     }
   };
-  const handleLogout2 = async (e) => {
-    e.preventDefault();
 
-    dispatch(getUserIdFromAuth(""));
-    toast.success("You logged Out Successfully");
-    navigate("/portal");
+  // ---- Purchase Test ----
+  const buyTest = async () => {
+    try {
+      const res = await axios.patch(`http://localhost:8000/api/v1/user/updatecoin/${id}`, { amount: 5 });
+      if (res.data.status === true) navigate("/personalitytest");
+    } catch (error) {
+      console.error(error);
+    }
   };
-  const [flashOn, setFlashOn] = useState(false);
-  const toggleFlash = () => {
-    setFlashOn(!flashOn);
+
+  // ---- Helpers ----
+  const formatDOB = (dob) => {
+    if (!dob) return "-";
+    return dob.split("T")[0];
   };
+
+  // ---- Loading Placeholder ----
+  if (data.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Toaster />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800 mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Main Render ----
   return (
-    <div className={`profile-b ${scanneropen ? "blurred-background" : ""}`}>
-      {data.length != 0 ? (
-        data.map((item) => {
-          return (
-            <div key={item._id} className="profile-main">
-            
-              <div className="profile-child1">
-              <div className="scanner-div">
-                <div className="scanner-container-main pcbtn">
-                  {scanneropen && (
-                    <div className={`scanner-container ${scanneropen ? "visible" : ""}`}>
-                      <QrScanner
-                        delay={300}
-                        onError={handleError}
-                        onScan={handleScan}
-                        style={{ width: "100%",zIndex:"99" }}
-                        facingMode="environment"
-                        facingModeChanged={(value) => {
-                          if (value === "user") {
-                            // Flash is not supported when using the front camera
-                            setFlashOn(false);
-                          }
-                        }}
-                        constraints={{
-                          video: {
-                            facingMode: "environment",
-                            torch: flashOn,
-                          },
-                        }}
-                      />
-                      <button
-                    onClick={() => {
-                      setopenScan(false);
-                    }}
-                    style={{position:"relative" ,margin:"auto",width:"50%"}}
-                    className="button-86"
-                  >
-                    close
-                  </button>
-                    </div>
-                  )}
-                </div>
+    <div className="min-h-screen bg-white">
+      <Toaster />
+
+      {/* QR Scanner Modal */}
+      {scannerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-gray-900 p-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white">QR Scanner</h2>
+              <button onClick={() => setScannerOpen(false)} className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors">
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="bg-gray-900 rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
+                <QrScanner delay={300} onError={handleError} onScan={handleScan} style={{ width: "100%" }} />
               </div>
-                <div className="profile-pic">
-                  <img
-                    width="100%"
-                    height="240px"
-                    src={`https://youthbuzzdata.s3.ap-south-1.amazonaws.com/${item.photo}`}
-                  ></img>
-                </div>
-                <div className="profile-name">
-                  <h1 className="profile-namee" style={{}}>
-                    {item.name} {item.lastname}
-                  </h1>
-                
-                  <h1>My Coin:{item.yourCoin}</h1>
-                  <div className="mobilebtn">
-                  {scanneropen && (
-                    <div className={`scanner-container ${scanneropen ? "visible" : ""}`}>
-                      <QrScanner
-                        delay={300}
-                        onError={handleError}
-                        onScan={handleScan}
-                        style={{ width: "100%",zIndex:"99" }}
-                        facingMode="environment"
-                        facingModeChanged={(value) => {
-                          if (value === "user") {
-                            // Flash is not supported when using the front camera
-                            setFlashOn(false);
-                          }
-                        }}
-                        constraints={{
-                          video: {
-                            facingMode: "environment",
-                            torch: flashOn,
-                          },
-                        }}
-                      />
-                      <button
-                    onClick={() => {
-                      setopenScan(false);
-                    }}
-                    style={{position:"relative" ,margin:"auto",width:"50%"}}
-                    className="button-86"
-                  >
-                    close
-                  </button><br></br>
-                    </div>
-                  )}
-                  </div>
-                  <div >
-                <button
-                    onClick={() => {
-                      setopenScan(true);
-                    }}
-                    style={{position:"relative" ,margin:"auto",width:"100%"}}
-                    className="button-86 mobilebtn"
-                  >
-                    Scanner
-                  </button><br></br>
-                  <Link to="/myWallet">
-                  <button className="button-86 mobilebtn"  style={{position:"relative" ,margin:"auto",width:"100%"}}>My Wallet</button>
-                </Link>
-                </div>
-                </div>
-             
-              
+              <div className="flex gap-3 mt-6">
+                <button onClick={toggleFlash} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors">
+                  {flashOn ? "Turn Flash Off" : "Turn Flash On"}
+                </button>
+                <button onClick={() => setScannerOpen(false)} className="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                  Close Scanner
+                </button>
               </div>
-              <div className="profile-child2">
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Test Confirmation Modal */}
+      {testModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-gray-900 p-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white">Confirm Purchase</h2>
+              <button onClick={() => setTestModalOpen(false)} className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors">
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+            <div className="p-8 text-center">
+              <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Coins className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Purchase Personality Test</h3>
+              <p className="text-gray-600 mb-8">
+                This test costs <span className="font-bold text-gray-800">5 coins</span>. Do you want to proceed?
+              </p>
+              <div className="space-y-3">
+                <button onClick={buyTest} className="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                  Yes, Purchase Test
+                </button>
+                <button onClick={() => setTestModalOpen(false)} className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {data.map((item) => (
+          <div key={item._id} className="space-y-8">
+            {/* Profile Header */}
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-full border-4 border-gray-200 overflow-hidden bg-gray-100 mx-auto mb-4">
+                <img
+                  src={`https://youthbuzzdata.s3.ap-south-1.amazonaws.com/${item.photo}`}
+                  alt={`${item.name} ${item.lastname}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => (e.target.src = "https://via.placeholder.com/150/6B7280/FFFFFF?text=User")}
+                />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{item.name} {item.lastname}</h1>
+              <div className="flex items-center justify-center gap-2 text-gray-600 mb-6">
+                <Coins className="w-5 h-5" />
+                <span className="font-semibold">{item.yourCoin} Coins</span>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-3 mb-8">
                 <Link to="/edit">
-                  <button className="button-85">edit</button>
+                  <button className="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg flex items-center gap-2 transition-colors">
+                    <Edit className="w-4 h-4" /> Edit Profile
+                  </button>
                 </Link>
                 <Link to="/myWallet">
-                  <button className="button-85  btnpos pcbtn">My Wallet</button>
-                </Link>
-
-               
-               
-                  <button
-                    onClick={() => {
-                      setopenScan(true);
-                    }}
-                    className="button-85  btnpos2 pcbtn"
-                  >
-                    Scanner
+                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-6 rounded-lg flex items-center gap-2 transition-colors">
+                    <Wallet className="w-4 h-4" /> My Wallet
                   </button>
-              
-
-                <button
-                  onClick={handleLogout2}
-                  style={{ position: "absolute", bottom: "10px" }}
-                  className="button-85 display-pc"
-                >
-                  Logout
+                </Link>
+                <button onClick={() => setScannerOpen(true)} className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-6 rounded-lg flex items-center gap-2 transition-colors">
+                  <QrCode className="w-4 h-4" /> Scan QR
                 </button>
-                <div style={{ flexBasis: "50%" }}>
-                  <h4 style={{ marginTop: "20px" }}>
-                    About <span style={{ color: "#4481eb" }}>me</span>
-                  </h4>
-                  <p className="para">
-                    Hello! I’m Alex Smith. Lorem ipsum dolor sit amet,
-                    consectetur adipiscing elit. Aenean fermentum ullamcorper
-                    sem, at placerat dolor volutpat ac. Duis nulla enim,
-                    condimentum nec ultricies.
-                  </p>
+                <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg flex items-center gap-2 transition-colors">
+                  <LogOut className="w-4 h-4" /> Logout
+                </button>
+              </div>
+            </div>
 
-                  <Link to="/personalitytest">
-                    {" "}
-                    <button
-                      style={{ position: "relative", marginTop: "10px" }}
-                      className="button-85 "
-                    >
-                      Take test
-                    </button>
-                  </Link>
-                </div>
-                <div style={{}} className="profile-child3">
-                  <div style={{ margin: "auto" }}>
-                    <h6 className="head">Name:</h6>
-                    <h6 className="head"> Email:</h6>
-                    <h6 className="head">Gender:</h6>
-                    <h6 className="head"> Phone Number:</h6>
-                    <h6 className="head">Date of Birth:</h6>
-                  </div>
-                  <div style={{ margin: "auto" }}>
-                    <h6 className="content-profile">{item.name}</h6>
-                    <h6 className="content-profile">{item.email}</h6>
-                    <h6 className="content-profile">{item.gender}</h6>
-                    <h6 className="content-profile">{item.phoneNumber}</h6>
-                    <h6 className="content-profile">
-                      {item.DOB.split("T00:00:00.000Z")}
-                    </h6>
-                  </div>
-                </div>
-                <button
-                  onClick={handleLogout2}
-                  style={{ position: "relative", marginTop: "30px" }}
-                  className="button-85 display-mobile display-mobile"
-                >
-                  Logout
+            {/* About & Personal Info */}
+            <div className="border-t border-gray-200 pt-8">
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">About Me</h2>
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  Hello! I'm {item.name} {item.lastname}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </p>
+                <button onClick={() => setTestModalOpen(true)} className="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center gap-2 transition-colors">
+                  Take Personality Test <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* <div style={{width:"100%"}}>
-                                <div>
-                                <  button style={{position:"relative",margin:"auto"}} className="button-85">edit</button>
-                                    </div>
-                           
-                      
-                            </div> */}
-              {test && (
-                <div className="taketest">
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "200px",
-                      background: "white",
-                      width: "80%",
-                      padding: "20px",
-                      boxShadow:
-                        "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px",
-                      borderRadius: "20px",
-                    }}
-                  >
-                    <h1 style={{ textAlign: "center" }}>
-                      {" "}
-                      Test cost is 5 coin, do you want to buy ??
-                    </h1>
-                    <div style={{ textAlign: "center" }}>
-                      <button onClick={buytest} className="button-71">
-                        Yes
-                      </button>
-                      <br></br>
-                      <h1>or</h1>
-                      <button className="button-71">No</button>
+              <div className="border-t border-gray-200 pt-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+                <div className="space-y-6">
+                  {[
+                    { icon: User, label: "Name", value: item.name },
+                    { icon: Mail, label: "Email", value: item.email },
+                    { icon: User, label: "Gender", value: item.gender },
+                    { icon: Phone, label: "Phone", value: item.phoneNumber },
+                    { icon: Calendar, label: "Date of Birth", value: formatDOB(item.DOB) },
+                  ].map((info, index) => (
+                    <div key={index} className="flex items-start gap-4">
+                      <div className="bg-gray-100 p-3 rounded-lg">
+                        <info.icon className="w-5 h-5 text-gray-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500 font-medium mb-1">{info.label}</p>
+                        <p className="text-gray-900 font-semibold">{info.value}</p>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              )}
+              </div>
             </div>
-          );
-        })
-      ) : (
-        <div></div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
-export default Profile;
