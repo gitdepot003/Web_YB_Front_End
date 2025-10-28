@@ -249,7 +249,12 @@ export default function Profile() {
                 </p>
                 <button onClick={() => setTestModalOpen(true)} className="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center gap-2 transition-colors">
                   Take Personality Test <ArrowRight className="w-4 h-4" />
-                </button>
+                </button><br></br>
+                <Link to="/gkp/token">
+                  <button className="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center gap-2 transition-colors">
+                    Control Room <ArrowRight className="w-4 h-4" />
+                   </button>
+                </Link>
               </div>
 
               <div className="border-t border-gray-200 pt-8">
