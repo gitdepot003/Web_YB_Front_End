@@ -16,7 +16,7 @@
     "aos": "^2.3.4",
     "apexcharts": "^3.44.0",
     "aphrodite": "^2.4.0",
-    "axios": "^1.3.4",
+    "axios": "^1.12.2",
     "chart.js": "^4.4.0",
     "dotenv": "^16.0.3",
     "embla-carousel-react": "^8.0.0-rc09",
@@ -73,6 +73,7 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.71.0",
     "scss": "^0.2.4",
+    "socket.io-client": "^4.8.1",
     "three": "^0.164.1",
     "tsparticles-engine": "^2.11.1",
     "web-vitals": "^2.1.4"
