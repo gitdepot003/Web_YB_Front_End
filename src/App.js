@@ -44,6 +44,17 @@ import ARcomp from "./components/auth/imageCompiler";
 import Bombay2 from "./components/auth/Arapps/bombay2";
 import Bombay3 from "./components/auth/Arapps/bombay3";
 import Bombay4 from "./components/auth/Arapps/bombay4";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import TokenEntry from "./pages/TokenEntry";
+import RoomView from "./pages/RoomView";
+
+
+
+
+
+
+
 
 // importing service creation pages
 
@@ -102,6 +113,11 @@ function App() {
           <Route path="/bombay2" element={<Bombay2/>}></Route>
           <Route path="/bombay3" element={<Bombay3/>}></Route>
           <Route path="/bombay4" element={<Bombay4/>}></Route>
+          <Route path="/controlroomadmin" element={<AdminLogin/>}></Route>
+          <Route path="/controlroomadmin/dashboard" element={<AdminDashboard/>} ></Route>
+          <Route path="gkp/token" element={<TokenEntry/>}></Route>
+          <Route path="gkp/controlroom/:token" element={<RoomView/>}></Route>
+         
 
         </Routes>
        
