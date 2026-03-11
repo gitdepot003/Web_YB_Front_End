@@ -48,6 +48,8 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import TokenEntry from "./pages/TokenEntry";
 import RoomView from "./pages/RoomView";
+import VR from "./pages/Vishwaar"
+
 
 
 
@@ -117,6 +119,8 @@ function App() {
           <Route path="/controlroomadmin/dashboard" element={<AdminDashboard/>} ></Route>
           <Route path="gkp/token" element={<TokenEntry/>}></Route>
           <Route path="gkp/controlroom/:token" element={<RoomView/>}></Route>
+          <Route path="/VishwaAR" element={<VR />} />
+
          
 
         </Routes>
