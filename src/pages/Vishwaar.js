@@ -1,5 +1,5 @@
-import Footer from "../components/auth/footer";
-import Header from "../components/auth/header";
+import Footer from "../components/auth/Footer";
+import Header from "../components/auth/Header";
 
 function Vishwaar() {
 
